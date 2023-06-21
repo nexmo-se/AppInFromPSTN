@@ -17,6 +17,8 @@
   <button type="button" id="answer">Answer</button>
   <button type="button" id="reject">Reject</button>
   <button type="button" id="hangup">Hang Up</button>
+  <p id="phone"></p>
+
   <script>
     const base_url = "https://mbphonetoapp.loca.lt/";
     const registerBtn = document.getElementById("register");
@@ -32,6 +34,7 @@
         const body = await response.json();
         console.log("Got registration response: ", body);
         if(body.token) {
+          notification.textContent = "Dial in to phone number: "+body.phone
           getNexmo(body.token,body.dc);
         }
       })
