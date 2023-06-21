@@ -12,11 +12,13 @@
   <h1>Inbound PSTN phone call</h1>
   <p id="notification">Lines are open for calls...</p>
   <br />
-  <input type="text" name="username" value="eCWTestCaller" placeholder="i.e. Mark" id="username" size="30">
+  <input type="text" name="username" value="John" placeholder="i.e. Mark" id="username" size="30">
   <button type="button" id="register">Register</button>
   <button type="button" id="answer">Answer</button>
   <button type="button" id="reject">Reject</button>
   <button type="button" id="hangup">Hang Up</button>
+  <button type="button" id="unregister">UnRegister</button>
+
   <p id="phone"></p>
 
   <script>
@@ -37,6 +39,19 @@
           notification.textContent = "Dial in to phone number: "+body.phone
           getNexmo(body.token,body.dc);
         }
+      })
+    })
+    const unregisterBtn = document.getElementById("unregister");
+    unregisterBtn.addEventListener("click", async () => {
+      let username = document.getElementById("username").value;
+      await fetch(base_url + "unregister", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ user: username })
+      }).then(async (response) => {
+        console.log("Unregistered: ", username);
       })
     })
     function getNexmo(token,dc) {
