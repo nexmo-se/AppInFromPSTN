@@ -2,6 +2,19 @@
 
 Aside from the ususal "npm install"...
 
+You will need to create an environment file:
+.env
+on your server, in the same directory as "server.js"
+This will contain 5 pieces of information..
+apiKey   -   Your Vonage API Key
+apiSecret  -  Your Vonage API Secret
+applicationId  -  The ApplicationID you created using this Key
+privateKey --  the LOCATION of the private key file (usually "./private.key"), generated when you created the ApplicationID
+number  -   Your Vonage Phone Number (LVN) associated with this ApplicationID
+
+There is a file, sample_env, which shows the format/keys you will need in the .env file
+
+
 You set your "local tunnel" name in the server.js at line 4:
 
 const subdomain = 'mbphonetoapp';
