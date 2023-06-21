@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- ******* Load nexmoClient from a CDN ****** -->
+  <script type="module" src="https://unpkg.com/nexmo-client@latest/dist/nexmoClient.js?module"></script>
+
+</head>
+
+<body>
+
+  <h1>Inbound PSTN phone call</h1>
+  <p id="notification">Lines are open for calls...</p>
+  <br />
+  <input type="text" name="username" value="eCWTestCaller" placeholder="i.e. Mark" id="username" size="30">
+  <button type="button" id="register">Register</button>
+  <button type="button" id="answer">Answer</button>
+  <button type="button" id="reject">Reject</button>
+  <button type="button" id="hangup">Hang Up</button>
+  <script>
+    const base_url = "https://mbphonetoapp.loca.lt/";
+    const registerBtn = document.getElementById("register");
+    registerBtn.addEventListener("click", async () => {
+      let username = document.getElementById("username").value;
+      await fetch(base_url + "register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ user: username })
+      }).then(async (response) => {
+        const body = await response.json();
+        console.log("Got registration response: ", body);
+        if(body.token) {
+          getNexmo(body.token,body.dc);
+        }
+      })
+    })
+    function getNexmo(token,dc) {
+      new NexmoClient({ debug: true, nexmo_api_url: "https://api"+dc+".nexmo.com"  })
+        .createSession(token)
+        .then(app => {
+          console.log("Got Nexmo app!");
+          const answerBtn = document.getElementById("answer");
+          const rejectBtn = document.getElementById("reject");
+          const hangupBtn = document.getElementById("hangup");
+          const notification = document.getElementById("notification");
+
+          app.on("member:call", (member, call) => {
+            notification.textContent = "You are receiving a call";
+            // Answer the call.
+            answerBtn.addEventListener("click", () => {
+              call.answer();
+              notification.textContent = "You are in a call";
+            });
+            // Reject the call
+            rejectBtn.addEventListener("click", () => {
+              call.reject();
+              notification.textContent = `You rejected the call`;
+            });
+            // Hang-up the call
+            hangupBtn.addEventListener("click", () => {
+              call.hangUp();
+              notification.textContent = `You ended the call`;
+            });
+          });
+
+          app.on("call:status:changed", (call) => {
+            notification.textContent = "Call Status: " + call.status;
+          });
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+  </script>
+</body>
+
+</html>
